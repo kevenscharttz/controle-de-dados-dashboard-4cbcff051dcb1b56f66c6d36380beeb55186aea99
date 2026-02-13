@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Providers\Filament;
+
+use Filament\Http\Middleware\Authenticate;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Pages\Dashboard;
+use Filament\Panel;
+use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\EnsureCanViewDashboard;
+use App\Http\Middleware\RedirectCommonUserToDashboards;
+
+class AdminPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->default()
+            // Alterado para 'painel' para evitar URL duplicada /home/home
+            ->id('painel')
+            ->path('painel')
+            ->login()
+            // Expandir a largura do conteúdo para aproveitar melhor a tela
+            ->maxContentWidth(Width::Full)
+            // Use default content width for a balanced layout
+            ->colors([
+                'primary' => [
+                    50 => '#eef7ff',
+                    100 => '#d9edff',
+                    200 => '#bce0ff',
+                    300 => '#8eccff',
+                    400 => '#59b0ff',
+                    500 => '#3b8def',
+                    600 => '#2570e3',
+                    700 => '#1e5bc7',
+                    800 => '#1e4ba3',
+                    900 => '#1e4081',
+                    950 => '#162951',
+                ],
+            ])
+            ->font('Inter')
+            ->brandName('Observatório de Dados')
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            // (intencional) sem clusters descobertos para evitar novo item de menu; 
+            // manteremos a navegação apenas via recurso "Dashboards" existente.
+            ->pages([
+                \App\Filament\Pages\HomePage::class,
+            ])
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->widgets([
+                AccountWidget::class,
+                FilamentInfoWidget::class,
+                \App\Filament\Widgets\UserCountWidget::class,
+                \App\Filament\Widgets\DashboardsCountWidget::class,
+                \App\Filament\Widgets\RecentDashboardsWidget::class,
+            ])
+            // Carregar o tema do Filament e também o app.css para garantir todas as utilidades do Tailwind
+            ->viteTheme([
+                'resources/css/filament/admin/theme.css',
+                'resources/css/app.css',
+            ])
+            ->middleware([
+                EncryptCookies::class,
+                AddQueuedCookiesToResponse::class,
+                StartSession::class,
+                AuthenticateSession::class,
+                ShareErrorsFromSession::class,
+                VerifyCsrfToken::class,
+                SubstituteBindings::class,
+                DisableBladeIconComponents::class,
+                DispatchServingFilamentEvent::class,
+                EnsureCanViewDashboard::class,
+                RedirectCommonUserToDashboards::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ]);
+    }
+}

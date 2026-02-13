@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Controllers\ProxyController;
+
+Route::get('/login', function () {
+    return redirect('/painel/login');
+})->name('login');
+
+Route::get('/', function () {
+    return Auth::check() ? redirect('/painel') : view('landing');
+});
+
+// Healthcheck endpoint for Render
+Route::get('/healthz', function () {
+    return response()->json(['status' => 'ok'], 200);
+});
+
+// Optional HTTPS proxy for embedding HTTP dashboards
+Route::middleware(['auth'])
+    ->get('/proxy/metabase/{path?}', [ProxyController::class, 'metabase'])
+    ->where('path', '.*')
+    ->name('proxy.metabase');
+
+// Zero-config generic proxy for any http/https URL (with SSRF protections)
+Route::middleware(['auth'])
+    ->get('/proxy/fetch', [ProxyController::class, 'fetch'])
+    ->name('proxy.fetch');
+
+// Universal path-preserving proxy for any scheme/host/port/path
+Route::middleware(['auth'])
+    ->get('/proxy/u/{scheme}/{host}/{port?}/{path?}', [ProxyController::class, 'universal'])
+    ->where([
+        'scheme' => 'https|http',
+        'host' => '[^/]+',
+        'port' => '\\d+',
+        'path' => '.*',
+    ])
+    ->name('proxy.universal');
