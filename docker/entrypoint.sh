@@ -39,8 +39,13 @@ php artisan storage:link >/dev/null 2>&1 || true
 
 # Rodar migracoes automaticamente; se falhar (ex: sem DB), apenas loga e continua
 if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
-  echo "[entrypoint] Executando migrations..."
-  php artisan migrate --force || echo "[entrypoint] Migrations falharam (provavel DB indisponivel). Continuando..."
+  if [ "${RUN_MIGRATIONS_MODE:-standard}" = "fresh" ]; then
+    echo "[entrypoint] Executando migrate:fresh --force..."
+    php artisan migrate:fresh --force || echo "[entrypoint] migrate:fresh falhou (provavel DB indisponivel). Continuando..."
+  else
+    echo "[entrypoint] Executando migrations..."
+    php artisan migrate --force || echo "[entrypoint] Migrations falharam (provavel DB indisponivel). Continuando..."
+  fi
 fi
 
 # Seeders essenciais (idempotentes)
