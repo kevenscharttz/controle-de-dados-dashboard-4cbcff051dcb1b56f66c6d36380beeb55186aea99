@@ -8,7 +8,7 @@
             Nenhum dashboard nesta pasta.
         </div>
     @else
-    <div class="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(560px,1fr))]">
+    <div class="grid grid-cols-1 gap-6">
             @foreach($dashboards as $record)
                 @php
                     $rawUrl = $record->url ?? '';
