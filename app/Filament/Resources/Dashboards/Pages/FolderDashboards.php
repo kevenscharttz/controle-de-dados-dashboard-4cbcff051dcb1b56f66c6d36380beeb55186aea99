@@ -15,8 +15,8 @@ class FolderDashboards extends Page
     protected static string $resource = DashboardResource::class;
     protected static ?string $title = 'Dashboards';
     protected string $view = 'filament.resources.dashboards.folder-dashboards';
-    // ocupar toda a largura disponível
-    protected static Width|string|null $maxContentWidth = Width::Full;
+    // ocupar toda a largura disponível (não estático, para compatibilidade com Filament BasePage)
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {

@@ -15,8 +15,8 @@ class ViewDashboard extends ViewRecord
      * Use a custom Blade view for nicer dashboard presentation.
      */
     protected string $view = 'filament.resources.dashboards.view';
-    // ocupar toda a largura disponível
-    protected static Width|string|null $maxContentWidth = Width::Full;
+    // ocupar toda a largura disponível (não estático, para compatibilidade com Filament BasePage)
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {
