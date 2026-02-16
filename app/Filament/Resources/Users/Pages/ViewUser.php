@@ -13,7 +13,8 @@ class ViewUser extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            EditAction::make()
+                ->visible(fn () => rescue(fn () => \Illuminate\Support\Facades\Gate::allows('update', $this->record), false)),
         ];
     }
 }

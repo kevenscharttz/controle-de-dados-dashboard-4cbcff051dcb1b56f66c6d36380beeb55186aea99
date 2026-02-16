@@ -44,7 +44,8 @@ class UsersTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(fn ($record) => rescue(fn () => \Illuminate\Support\Facades\Gate::allows('update', $record), false)),
                 DeleteAction::make()
                     // Evita 500 no render do index caso policy/BD lancem excecao
                     ->visible(fn ($record) => rescue(fn () => \Illuminate\Support\Facades\Gate::allows('delete', $record), false)),
