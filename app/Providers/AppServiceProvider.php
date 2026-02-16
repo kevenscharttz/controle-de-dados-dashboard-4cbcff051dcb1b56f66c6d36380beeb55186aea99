@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Vite;
@@ -42,6 +43,16 @@ class AppServiceProvider extends ServiceProvider
             }
         } catch (\Throwable $e) {
             Log::warning('Falha ao ajustar esquema https: '.$e->getMessage());
+        }
+
+        // Em produção, proibir comandos destrutivos do Artisan que poderiam apagar dados existentes
+        // Proíbe: db:wipe, migrate:fresh, migrate:refresh, migrate:reset, migrate:rollback
+        if ($this->app->environment('production')) {
+            try {
+                DB::prohibitDestructiveCommands();
+            } catch (\Throwable $e) {
+                Log::warning('Falha ao ativar proteção contra comandos destrutivos: '.$e->getMessage());
+            }
         }
 
         // Override robusto dos caminhos de assets do Vite:

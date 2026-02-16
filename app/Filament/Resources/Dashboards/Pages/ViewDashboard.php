@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Dashboards\Pages;
 use App\Filament\Resources\Dashboards\DashboardResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Facades\Gate;
 
 class ViewDashboard extends ViewRecord
@@ -14,6 +15,8 @@ class ViewDashboard extends ViewRecord
      * Use a custom Blade view for nicer dashboard presentation.
      */
     protected string $view = 'filament.resources.dashboards.view';
+    // ocupar toda a largura disponível
+    protected static Width|string|null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {

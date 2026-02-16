@@ -37,25 +37,8 @@ php artisan view:clear   >/dev/null 2>&1 || true
 # Link de storage (idempotente)
 php artisan storage:link >/dev/null 2>&1 || true
 
-# Rodar migracoes automaticamente; se falhar (ex: sem DB), apenas loga e continua
-if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
-  if [ "${RUN_MIGRATIONS_MODE:-standard}" = "fresh" ]; then
-    echo "[entrypoint] Executando migrate:fresh --force..."
-    php artisan migrate:fresh --force || echo "[entrypoint] migrate:fresh falhou (provavel DB indisponivel). Continuando..."
-  else
-    echo "[entrypoint] Executando migrations..."
-    php artisan migrate --force || echo "[entrypoint] Migrations falharam (provavel DB indisponivel). Continuando..."
-  fi
-fi
-
-# Seeders essenciais (idempotentes)
-# - RUN_SEEDERS controla seeding em geral (padrao: true)
-# - RUN_ROLE_SEEDER controla o seeder de Roles/Permissions (padrao: false para NAO sobrescrever suas mudancas)
-if [ "${RUN_SEEDERS:-true}" = "true" ]; then
-  echo "[entrypoint] Executando DatabaseSeeder..."
-  # Chama o DatabaseSeeder que por sua vez executa PlatformRolesAndPermissionsSeeder e DockerSuperAdminSeeder
-  php artisan db:seed --force || echo "[entrypoint] db:seed falhou; continuando mesmo assim"
-fi
+# NUNCA rodar migrations ou seeders automaticamente em produção
+echo "[entrypoint] Migrations e seeders AUTOMÁTICOS desativados para proteger dados existentes."
 
 # Otimizacoes
 php artisan optimize || true

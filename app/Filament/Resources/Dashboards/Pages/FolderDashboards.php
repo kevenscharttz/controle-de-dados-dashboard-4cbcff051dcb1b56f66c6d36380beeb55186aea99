@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Dashboards\Pages;
 
 use App\Filament\Resources\Dashboards\DashboardResource;
 use Filament\Resources\Pages\Page;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Dashboard;
 use App\Models\DashboardFolder;
@@ -14,6 +15,8 @@ class FolderDashboards extends Page
     protected static string $resource = DashboardResource::class;
     protected static ?string $title = 'Dashboards';
     protected string $view = 'filament.resources.dashboards.folder-dashboards';
+    // ocupar toda a largura disponível
+    protected static Width|string|null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {
@@ -40,9 +43,14 @@ class FolderDashboards extends Page
                     ]);
                 })
                 ->visible(function () use ($folderId) {
+                    /** @var \App\Models\User|null $user */
                     $user = Auth::user();
-                    $isAdmin = $user && method_exists($user, 'hasRole') && ($user->hasRole('super_admin') || $user->hasRole('super-admin'));
-                    $isManager = $user && method_exists($user, 'hasRole') && $user->hasRole('organization-manager');
+                    $isAdmin = false;
+                    $isManager = false;
+                    if ($user && method_exists($user, 'hasRole')) {
+                        $isAdmin = ($user->hasRole('super_admin') || $user->hasRole('super-admin'));
+                        $isManager = $user->hasRole('organization-manager');
+                    }
                     return ! empty($folderId) && ($isAdmin || $isManager);
                 }),
         ];
