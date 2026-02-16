@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     @php /** @var \Illuminate\Database\Eloquent\Collection<\App\Models\Dashboard> $dashboards */ @endphp
 
-    <div class="max-w-full mx-auto px-0 sm:px-2">
+    <div class="w-full px-0 sm:px-2">
 
     @if($dashboards->isEmpty())
         <div class="rounded-lg border border-gray-200 p-6 text-gray-600">

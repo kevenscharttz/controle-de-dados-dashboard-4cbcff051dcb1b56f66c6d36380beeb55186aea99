@@ -398,6 +398,12 @@
 .dark .dashboard-card-title, .dark .fi-wi-stats-label {
   color: #f3f4f6;
 }
+
+/* Force full-width content for Filament pages */
+.fi-page,
+.fi-page-content {
+    max-width: 100% !important;
+}
 .dashboard-card-value, .fi-wi-stats-value {
   font-size: 2.25rem;
   font-weight: bold;
